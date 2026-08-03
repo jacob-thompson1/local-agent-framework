@@ -1,0 +1,62 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "my-agent-framework"
+version = "0.2.0"
+description = "Production-ready agent framework on LangChain, optimized for small (3B-7B) local language models."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Jacob Thompson" }]
+keywords = ["llm", "agent", "langchain", "ollama", "local-llm", "small-models"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries",
+]
+
+# Core deps only -- all pure Python, all available on PyPI for Win/mac/Linux.
+dependencies = [
+    "langchain-core>=0.3",
+    "platformdirs>=4.0",
+]
+
+[project.optional-dependencies]
+ollama = ["langchain-ollama>=0.2"]
+openai = ["langchain-openai>=0.2"]
+anthropic = ["langchain-anthropic>=0.2"]
+keyring = ["keyring>=25"]
+web = ["ddgs>=9"]
+tokenizer = ["tiktoken>=0.7"]
+tui = ["textual>=0.60"]
+all = [
+    "my-agent-framework[ollama,openai,anthropic,keyring,web,tokenizer,tui]",
+]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+    "mypy>=1.10",
+]
+
+[project.scripts]
+my-agent = "my_agent_framework.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["my_agent_framework"]
+
+[tool.ruff]
+line-length = 90
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E4", "E5", "E7", "E9", "F", "W"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

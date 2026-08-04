@@ -4,7 +4,7 @@ Approximate prompt costs (measured with the default counter; your tokenizer
 may vary by a few tokens):
 
 =====================  ========  ============  =====================================
-Tool                   ~Tokens   Severity      Recommended for
+Tool                 s  ~Tokens   Severity      Recommended for
 =====================  ========  ============  =====================================
 calculator             ~20       read_only     all sizes (3B+)
 get_current_time       ~15       read_only     all sizes
@@ -33,9 +33,18 @@ import subprocess
 import sys
 from pathlib import Path
 
+from ..config import Settings
 from ..registry import tool
 from ..safety import Severity
-from ..editing import propose_edit, apply_edit
+from ..editing import EditSession
+
+# ---------------------------------------------------------------------------
+# Initialize EditSession and get edit tools
+# ---------------------------------------------------------------------------
+
+_settings = Settings()
+_edit_session = EditSession(workspace_root=_settings.get("workspace-root"))
+_edit_tools = _edit_session.tools()
 
 # ---------------------------------------------------------------------------
 # Safe arithmetic (no eval)
@@ -164,4 +173,4 @@ def web_search(query: str, max_results: int = 3) -> str:
 #: Convenience bundles by model size (see docs/MODEL_GUIDE.md).
 BASIC_TOOLS = [calculator, get_current_time, read_file]                    # 3B
 STANDARD_TOOLS = BASIC_TOOLS + [list_directory, write_file]                # 5B
-FULL_TOOLS = STANDARD_TOOLS + [run_python, web_search, propose_edit, apply_edit]                     # 7B+
+FULL_TOOLS = STANDARD_TOOLS + [run_python, web_search, *_edit_tools]                     # 7B+
